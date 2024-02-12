@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pokedoc-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels: # label here tells us that all pods that have this label belong to this Deployment
+      app: pokedoc-app
+  template: # configuration for pod
+    metadata:
+      labels: # all pods replica will have the same label
+        app: pokedoc-app
+    spec:
+      containers:
+        - name: pokedoc-app
+          image: pokedoc-app
+          imagePullPolicy: Never # we have to set this to "Never" otherwise k8s will keep pulling image from network instead of local
+          ports:
+            - containerPort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pokedex-service
+spec:
+  selector:
+    app: pokedex 
+  ports:
+    - protocol: TCP
+      port: 9000 # service port
+      targetPort: 9000 # containerPort of Deployment
